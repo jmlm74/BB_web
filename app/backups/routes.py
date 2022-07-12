@@ -39,7 +39,7 @@ def bckp_detail(id):
         'compressed_size': array_ligne3[-4] + " " + array_ligne3[-3],
         'deduplicated_size': array_ligne3[-2] + " " + array_ligne3[-1],
     }
-    return render_template('backups/bckp_detail.html', title=title, context=context)
+    return render_template('bckp_detail.html', title=title, context=context)
 
 
 @bp_backups.route('/archives_list/<id>')
@@ -109,7 +109,7 @@ def archive_info(repo_id, archive_name):
                'original_size': array_ligne[-6] + " " + array_ligne[-5],
                'compressed_size': array_ligne[-4] + " " + array_ligne[-3],
                'deduplicated_size': array_ligne[-2] + " " + array_ligne[-1],}
-    return render_template('backups/archive_info.html', title=title, context=context)
+    return render_template('archive_info.html', title=title, context=context)
 
 @bp_backups.route('/get_list_archive/<repo_id>/<archive_name>')
 @bp_backups.route('/get_list_archive/<repo_id>/<archive_name>/<filter>')
@@ -158,4 +158,4 @@ def archive_filter(repo_id, archive_name):
         context['form_submit'] = True
         context['filter'] = form.filter.data.replace("/", "*")
 
-    return render_template('backups/archive_detail.html', title=title, context=context, form=form)
+    return render_template('archive_detail.html', title=title, context=context, form=form)

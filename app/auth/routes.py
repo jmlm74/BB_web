@@ -30,7 +30,7 @@ def login():
             return redirect(url_for('index'))
         else:
             flash("User is not active")
-    return render_template('auth/login.html', title='Login', form=form)
+    return render_template('login.html', title='Login', form=form)
 
 
 @bp.route('/logout')
@@ -50,7 +50,7 @@ def register():
         db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('auth.login'))
-    return render_template('auth/auth_generic.html', title='Register', form=form)
+    return render_template('auth_generic.html', title='Register', form=form)
 
 
 @bp.route('/reset_password_request', methods=['GET', 'POST'])
@@ -64,7 +64,7 @@ def reset_password_request():
             send_password_reset_email(user)
         flash('Check your email for the instructions to reset your password')
         return redirect(url_for('auth.login'))
-    return render_template('auth/auth_generic.html',
+    return render_template('auth_generic.html',
                            title='Reset Password', form=form)
 
 
@@ -81,7 +81,7 @@ def reset_password(token):
         db.session.commit()
         flash('Your password has been reset.')
         return redirect(url_for('auth.login'))
-    return render_template('auth/auth_generic.html', form=form, title="Reset Password")
+    return render_template('auth_generic.html', form=form, title="Reset Password")
 
 
 @bp.route('/create', methods=['GET', 'POST'])
@@ -98,7 +98,7 @@ def create_user():
         db.session.commit()
         flash(f"user {form.username.data} created")
         return redirect(url_for('auth.liste_users'))
-    return render_template('auth/auth_generic.html', form=form, title="Create")
+    return render_template('auth_generic.html', form=form, title="Create")
 
 
 @bp.route('/update/<user_id>', methods=['GET', 'POST'])
@@ -120,7 +120,7 @@ def update_user(user_id):
         db.session.commit()
         flash(f"user {form.username.data} updated")
         return redirect(url_for('auth.liste_users'))
-    return render_template('auth/auth_generic.html', title="Update user", form=form)
+    return render_template('auth_generic.html', title="Update user", form=form)
 
 @bp.route('/delete/<user_id>', methods=['GET', 'POST'])
 @is_admin
@@ -134,14 +134,14 @@ def delete_user(user_id):
         db.session.commit()
         flash(f"user {user.username} deleted !")
         return redirect(url_for('auth.liste_users'))
-    return render_template('auth/delete_user.html', title="Delete user", user=user)
+    return render_template('delete_user.html', title="Delete user", user=user)
 
 
 @bp.route('/list')
 def liste_users():
     users = User.query.order_by(User.username).all()
     print(f"users - {users}")
-    return render_template('auth/list_users.html', title='liste utilisateurs', users=users)
+    return render_template('list_users.html', title='liste utilisateurs', users=users)
 
 
 @bp.route('auth/ajax_list')

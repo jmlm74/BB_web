@@ -13,23 +13,17 @@ import os
 
 app = Flask(__name__)
 
-
 app.config.from_object(Config)
-
-
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 mail = Mail(app)
 
-from app.backups import bp_backups, models
-app.register_blueprint(bp_backups, url_prefix='/backups')
-
-
 toolbar = DebugToolbarExtension(app)
 
 bootstrap = Bootstrap5(app)
+
 
 def is_admin(function):
     @wraps(function)
@@ -45,11 +39,15 @@ def is_admin(function):
         return function(*args, **kwargs)
     return wrapper
 
-from app.auth import bp as auth_bp
+
+from app.backups import bp_backups
+app.register_blueprint(bp_backups, url_prefix='/backups')
+
+from app.auth import bp as auth_bp, models
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
+
 from app import routes, errors
-from app.auth import models
 login_manager = LoginManager(app)
 login_manager.login_view = 'auth/login'
 
@@ -58,12 +56,9 @@ login_manager.login_view = 'auth/login'
 def appinfo():
     return dict(appname=app.config.get('APPNAME'))
 
-
 @login_manager.user_loader
 def load_user(id):
     return models.User.query.get(int(id))
-
-       
 
 """
 @app.before_request

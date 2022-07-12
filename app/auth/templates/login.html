@@ -9,9 +9,10 @@
         </div>
     </div>
     <div class="row d-flex justify-content-center">
-    
+    {#
     <p class="text-center">
         New User ? &ensp;<a href="{{ url_for('auth.register') }}">Click to Register!</a></p>
+    #}
     <p class="text-center">
         Forgot Your Password ? &ensp;
         <a href="{{ url_for('auth.reset_password_request') }}">Click to Reset It</a>
