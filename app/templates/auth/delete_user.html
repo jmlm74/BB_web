@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block body_block %}
+    <h1 class="text-center">{{title}}</h1>
+    <div class="row d-flex justify-content-center">
+        Delete {{ user.username }} - id {{ user.id }}
+    </div>
+    <form method="post">
+        <div class="d-flex justify-content-center">
+            <input type="submit" value="Delete" class="btn btn-primary">
+        </div>
+    </form>
+{% endblock %}

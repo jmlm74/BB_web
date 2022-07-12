@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from 'bootstrap5/form.html' import render_form %}
+
+{% block body_block %}
+    <h1 class="text-center">{{title}}</h1>
+    <div container>
+        <hr />
+        <div class="row ms-5">
+            <a>Repo : {{ context['repo_name'] }}</a>
+            <a>Archive : {{ context['archive_name'] }}</a>
+        </div>
+        <hr />
+        <div class="row ms-5">
+            {{ render_form(form) }}
+        </div>
+        {% if context['form_submit'] %}
+            <input type="hidden" id="my-filter" value="{{context['filter']}}"> 
+            <div class="row mt-3 col-12 ms-5" id="button-loader-div">
+                <div class="col-3" id="button-loader">
+                    <!-- ici le bouton-->
+                </div>
+                <div class="col-3 " id="anim_loader">
+                    <!-- ici l'annime loader -->
+                </div>
+            </div>
+            <div class="row col-12 data" id="archive_detail">
+            </div>   
+        {%endif%}
+    </div>
+{% endblock %}

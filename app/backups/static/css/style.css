@@ -1,0 +1,32 @@
+.wrapper{
+    justify-content: center;
+    align-items: center;
+}
+    
+.pulse{
+    width: 40px;
+    height: 40px;
+    background-color: red;
+    border-radius: 50%;
+    animation: animate 3s linear infinite
+}
+
+@keyframes animate
+{
+    0%
+    {
+    box-shadow: 0 0 0 0 rgb(255, 109, 74, 0.7) , 0 0 0 0 rgb(255, 109, 74, 0.7)
+    }
+    40%
+    {
+        box-shadow: 0 0 0 50px rgb(255, 109, 74, 0) , 0 0 0 0 rgb(255, 109, 74, 0.7)
+    }
+    80%
+    {
+        box-shadow: 0 0 0 50px rgb(255, 109, 74, 0) , 0 0 0 30px rgb(255, 109, 74, 0)
+    }
+    100%
+    {
+        box-shadow: 0 0 0 0 rgb(255, 109, 74, 0) , 0 0 0 30px rgb(255, 109, 74, 0)
+    }
+}

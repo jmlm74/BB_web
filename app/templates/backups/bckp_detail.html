@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block body_block %}
+    <h1 class="text-center">{{title}}</h1>
+    <div container>
+        <hr/>
+        <div class="row">
+            <div class="col-12 ms-5">
+                Repo chiffré : <input type="checkbox" name="Encrypted" onclick="return false;" value="Encrypted " {{'checked="checked"' if context['is_encrypted'] else ""}}/>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-3 ms-5">
+                Taille totale : <em>{{context['original_size']}}</em>
+            </div>
+            <div class="col-3 ms-5">
+                Taille compressée : <em>{{context['compressed_size']}}</em>
+            </div>
+            <div class="col-3 ms-5">
+                Taille dédupliquée/Réelle : <em><strong>{{context['deduplicated_size']}}</strong></em>
+            </div>
+        </div>
+        <hr />
+        <div class="row mt-3 d-flex">
+            <table id="data" class="table table-striped display" style="width:100%" >
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>archive_name</th>
+                        <th></th>
+                        <th>date archive</th>
+                        <th></th>
+                    </tr>
+                </thead> 
+            
+            </table>
+        </div>
+    </div>
+    <script>
+    $(document).ready(function () {
+        let t = $('#data').DataTable({
+            paging: false,
+            info: false,
+            orderable: false,
+            searchable: false,
+            ajax: '/backups/archives_list/'+{{context['repo_id']}},
+            serverSide: true,    
+            columns:[
+                {data: null, defaultContent: "",
+                render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;}
+                },
+                {data: 'archive_name', width: "70%" },
+                {data: 'result', searchable: false, visible: false},
+                {data: 'archive_date', orderable: false,
+                render: function (repo_last_archive,type,row){
+                    let color = 'red'
+                    if (row['result'] == true) { color = 'black' }
+                    return '<span style="color:' + color + '">' + repo_last_archive + '</span>';
+                }},
+                {data: null,  defaultContent: "",
+                render: function(data,type,row,meta){
+                    return '<a href="/backups/archive_info/'+data['id']+'/'+data['archive_name']+'"><img data-bs-toggle="tooltip" data-bs-placement="left" \
+                        title="Archive Info" style="width: 20px;" src="/static/images/pencil.svg" /></a> \
+                        <a href="/backups/archive_filter/'+data['id']+'/'+data['archive_name']+'"><img data-bs-toggle="tooltip" data-bs-placement="left" \
+                        title="Recherche fichier" style="width: 20px;" src="/static/images/filter2.png" /></a>'
+
+                }},
+            ]
+        });
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block body_block %}
+    <h1 class="text-center">{{title}}</h1>
+    <div container>
+        <hr />
+        <div class="row ms-5">
+            <a>Repo : {{ context['repo_name'] }}</a>
+            <a>Archive : {{ context['archive_name'] }}</a>
+        </div>
+        <div class="row mt-3">
+            <div class="col-3 ms-5">
+                Taille totale : <em>{{context['original_size']}}</em>
+            </div>
+            <div class="col-3 ms-5">
+                Taille compressée : <em>{{context['compressed_size']}}</em>
+            </div>
+            <div class="col-3 ms-5">
+                Taille dédupliquée/Réelle : <em><strong>{{context['deduplicated_size']}}</strong></em>
+            </div>
+        </div>
+        <hr />
+        <div class="row mt-3 col-12 ms-5" id="button-loader-div">
+            <div class="col-3" id="button-loader">
+                <!-- ici le bouton-->
+            </div>
+            <div class="col-3 " id="anim_loader">
+                <!-- ici l'annime loader --> 
+            </div>       
+        </div>
+        
+        <div class="row col-12 data" id="archive_detail"></div>   
+    </div>
+{% endblock %}

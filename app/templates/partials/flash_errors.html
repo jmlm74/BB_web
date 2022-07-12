@@ -1,0 +1,5 @@
+<div class="row">
+{% for mesg in get_flashed_messages() %}
+      <p class="text-danger text-center">{{ mesg }}</p>
+{% endfor %}
+</div>

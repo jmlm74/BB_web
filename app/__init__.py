@@ -1,0 +1,80 @@
+from functools import wraps
+from flask import Flask, abort, flash, g
+from config import Config
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_debugtoolbar import DebugToolbarExtension
+from flask_bootstrap import Bootstrap5
+from flask_login import LoginManager
+from flask_login import current_user
+from flask_mail import Mail
+from datetime import datetime
+import os
+
+app = Flask(__name__)
+
+
+app.config.from_object(Config)
+
+
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+mail = Mail(app)
+
+from app.backups import bp_backups, models
+app.register_blueprint(bp_backups, url_prefix='/backups')
+
+
+toolbar = DebugToolbarExtension(app)
+
+bootstrap = Bootstrap5(app)
+
+def is_admin(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        print(current_user)
+        try:
+            if not current_user.is_admin:
+                flash("You do not have permission to go there ! Admin only", "warning")
+                abort(403)
+        except AttributeError:
+            flash("You do not have permission to go there ! Should login before", "warning")
+            abort(401)
+        return function(*args, **kwargs)
+    return wrapper
+
+from app.auth import bp as auth_bp
+app.register_blueprint(auth_bp, url_prefix='/auth')
+
+from app import routes, errors
+from app.auth import models
+login_manager = LoginManager(app)
+login_manager.login_view = 'auth/login'
+
+
+@app.context_processor
+def appinfo():
+    return dict(appname=app.config.get('APPNAME'))
+
+
+@login_manager.user_loader
+def load_user(id):
+    return models.User.query.get(int(id))
+
+       
+
+"""
+@app.before_request
+def before_request():
+    if current_user.is_authenticated:
+        current_user.last_seen = datetime.utcnow()
+        db.session.commit()
+
+
+@app.after_request
+def apply_caching(response):
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    return response
+"""

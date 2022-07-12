@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block body_block %}
+    <h1 class="text-center">{{title}}</h1>
+    <div class="container">
+        <div class="row d-flex">
+            <div class="col-md-3 offset-md-3">
+                <a href="{{url_for('auth.create_user')}}"><input type="button" class="btn btn-primary" value="Créer" /></a>
+            </div>
+        </div>
+        <div class="row d-flex">
+            <table id="data" class="table table-striped display" style="width:100%" >
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Active</th>
+                    <th>Admin</th>
+                    <th>Action</th>  
+                </tr>
+                </thead> 
+                
+            </table>
+        </div>
+        <script>
+           
+            $(document).ready(function () {
+                let t = $('#data').DataTable({
+                    paging: true,
+                    info: true,
+                    ajax: 'auth/ajax_list',
+                    serverSide: true,
+                    columns:[
+                        {data: 'id',
+                        render: function (data, type, row, meta) {
+                            return meta.row + meta.settings._iDisplayStart + 1;}
+                        },
+                        {data: 'username', orderable:true, searchable: true},
+                        {data: 'email', orderable:true, searchable: true},
+                        {data: 'is_active', 
+                        render: function(data){
+                            if (data){
+                                return '<img style="width: 20px;" src="/static/images/OK.png"/> '
+                            } else {
+                                return '<img style="width: 20px;" src="/static/images/KO.png"/> '
+                            }
+                        }},
+                        {data: 'is_admin',
+                            render: function(data){
+                                if (data){
+                                    return '<img style="width: 20px;" src="/static/images/OK.png"/> '
+                                } else {
+                                    return '<img style="width: 20px;" src="/static/images/KO.png"/> '
+                                }
+                        }},
+                        {data: 'id',  orderable: false,
+                        render: function(id){
+                            return '<a href="/auth/update/'+id+'"><img style="width: 20px;" src="/static/images/pencil.svg" /></a>' + "&nbsp&nbsp&nbsp" +
+                                   '<a href="/auth/delete/'+id+'"><img style="width: 20px;" src="/static/images/trash-xs.png"/></a>'
+
+                        }}
+                    ]
+                });
+            });
+          </script>
+       
+    </div>
+{% endblock %}exa

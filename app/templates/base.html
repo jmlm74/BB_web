@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+{#
+    The base template
+    the head part should always be the same except the title and the css files
+    it includes the othed "based templates" : navbar - footer - scripts
+#}
+
+<html lang="en">
+    <head>
+        {% block head %}
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+            <meta name="description" content="" />
+            <meta name="author" content="" />
+            <!-- Favicon -->
+            <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.png') }}">
+            {% block title %}
+                <title>{{ appname }} {% if title %} - {{ title }} {% endif %}</title>
+            {%endblock title %}
+            
+            <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
+            <link href="https://fonts.googleapis.com/css2?family=Lato&family=Open+Sans&family=Roboto&family=Source+Sans+Pro&display=swap" 
+                rel="stylesheet">
+            <!-- Jquery for datatables -->
+            <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            {% block styles %}
+                <!-- Bootstrap CSS -->
+                {{ bootstrap.load_css() }}
+                <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
+                <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.0/css/dataTables.bootstrap5.css">
+                {% if request.blueprint %}
+                    <link rel="stylesheet" type="text/css" 
+                          href="{{ url_for(request.blueprint+'.static', filename='css/style.css') }}">
+                {% endif %}
+            {% endblock %}
+        {%endblock head%}
+        
+    </head>
+        <body id="my-body">
+        {% include 'partials/_navbar.html' %}
+        {% include 'partials/flash_errors.html' %}
+        {% block body_block %}
+        
+        {% endblock body_block %}
+        
+        {% include 'partials/_back.html' %}
+
+        {% block scripts %}
+            {% include 'partials/scripts.html' %}
+            <!-- Optional JavaScript -->
+            {{ bootstrap.load_js() }}
+        {% endblock scripts %}
+    </body>
+</html>
