@@ -1,11 +1,12 @@
 import os
 import subprocess
-from flask import make_response, render_template, jsonify
+from flask import flash, make_response, redirect, render_template, jsonify, url_for
 from app.backups import bp_backups
 from app import app
 from app.backups.models import Repo
 from flask_api import status
 from app.backups.forms import ArchiveFilterForm
+from datetime import datetime, date
 
 
 @bp_backups.route('/')
@@ -20,13 +21,19 @@ def bckp_detail(id):
     args = [app.config['BORG_BINARY']]
     args.append('--override')
     args.append(f"location.repositories=['{repo.repo_name}']")
+    args.append('--override')
+    args.append(f"storage.encryption_passphrase='{repo.repo_passphrase}'")
     args.append("info")
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
-
-    array_ligne1 = repo_array[3].split(' ')
+    print(repo_array)
+    try:
+        array_ligne1 = repo_array[3].split(' ')
+    except IndexError:
+        flash("Erreur --> voir logs !")
+        return redirect(url_for('index'))
     is_encrypted = True if array_ligne1[1] == 'Yes' else False
     ligne3 = repo_array[-4]
     array_ligne3 = repo_array[-4].split(' ')
@@ -50,6 +57,8 @@ def ajax_liste_archives(id):
     args = [app.config['BORG_BINARY']]
     args.append('--override')
     args.append(f"location.repositories=['{repo.repo_name}']")
+    args.append('--override')
+    args.append(f"storage.encryption_passphrase='{repo.repo_passphrase}'")
     args.append("list")
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
@@ -57,13 +66,13 @@ def ajax_liste_archives(id):
     repo_array = rc.stdout.split('\n')
     print(repo_array)
     data = [get_data_from_archives_list(ligne, repo.id) for ligne in repo_array]
-    print(data)
+    # print(data)
     # remove None in array
     data = [i for i in data if i]
     # [repo_to_dict(repo) for repo in query]_
-    print(data)
+    # print(data)
     return {
-        'data': data,
+        'data': data[1:],
         # [repo.to_dict() for repo in query],
     }
 
@@ -73,11 +82,31 @@ def get_data_from_archives_list(ligne, repo_id):
     if ligne[0] == '/':
         return None
     ligne_array = ligne.split(' ')
-
+    print(f"==={ligne_array}===")
+    if len(ligne_array) < 4:
+        archive_date = str(ligne_array[2])
+        result = False
+    else:
+        if len(str(ligne_array[1])) == 0:
+            date_archive = str(ligne_array[3])
+            heure_archive = str(ligne_array[4])
+        else:
+            date_archive = str(ligne_array[2])
+            heure_archive = str(ligne_array[3])            
+        archive_date = date_archive + " - " + heure_archive
+        str_archive_date = datetime.strptime(date_archive, "%Y-%m-%d").date()
+        # print(date_archive)
+        date_now = date.today()
+        delta = date_now - str_archive_date
+        if delta.days > 0:
+            result = False
+        else:
+            result = True
+        
     return {'id': repo_id,
             'archive_name': ligne_array[0][:40],
-            'result': 0,
-            'archive_date': ligne_array[2]}
+            'result': result,
+            'archive_date': archive_date}
 
 
 @bp_backups.route('/archive_info/<repo_id>/<archive_name>')
@@ -88,6 +117,8 @@ def archive_info(repo_id, archive_name):
     args = [app.config['BORG_BINARY']]
     args.append('--override')
     args.append(f"location.repositories=['{repo.repo_name}']")
+    args.append('--override')
+    args.append(f"storage.encryption_passphrase='{repo.repo_passphrase}'")
     args.append("--archive")
     args.append(archive_name)
     args.append("info")
@@ -111,6 +142,7 @@ def archive_info(repo_id, archive_name):
                'deduplicated_size': array_ligne[-2] + " " + array_ligne[-1],}
     return render_template('archive_info.html', title=title, context=context)
 
+
 @bp_backups.route('/get_list_archive/<repo_id>/<archive_name>')
 @bp_backups.route('/get_list_archive/<repo_id>/<archive_name>/<filter>')
 def get_list_archive(repo_id, archive_name, filter=None):
@@ -122,6 +154,8 @@ def get_list_archive(repo_id, archive_name, filter=None):
     args.append("list")
     args.append('--override')
     args.append(f"location.repositories=['{repo.repo_name}']")
+    args.append('--override')
+    args.append(f"storage.encryption_passphrase='{repo.repo_passphrase}'")
     args.append("--archive")
     args.append(archive_name)
     args.append("--short")

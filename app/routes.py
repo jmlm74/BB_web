@@ -92,10 +92,10 @@ def repo_to_dict(repo):
         }
     date_archive_str = rc.stdout.split()[-3]
     time_archive_str = rc.stdout.split()[-2]
-    print(date_archive_str)
+    # print(date_archive_str)
     repo_last_archive = date_archive_str + " - " + time_archive_str
     date_archive = datetime.strptime(date_archive_str, "%Y-%m-%d").date()
-    print(date_archive)
+    # print(date_archive)
     date_now = date.today()
     delta = date_now - date_archive
     if delta.days > 0:

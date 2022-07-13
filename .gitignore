@@ -149,3 +149,4 @@ venv.bak/
 
 # database
 app.db
+migrations/
