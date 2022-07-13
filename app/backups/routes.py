@@ -129,6 +129,7 @@ def archive_info(repo_id, archive_name):
     repo_array = rc.stdout.split('\n')
     # print(repo_array)
     data = [ligne for ligne in repo_array if ligne]
+    print(data)
     print(data[-2])
     array_ligne = data[-2].split(' ')
     array_ligne = ' '.join(array_ligne).split()
