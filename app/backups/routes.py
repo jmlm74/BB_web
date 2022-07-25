@@ -8,6 +8,14 @@ from flask_api import status
 from app.backups.forms import ArchiveFilterForm
 from datetime import datetime, date
 
+my_weekdays = {'Sun': 'Dimanche',
+               'Mon': 'Lundi',
+               'Tue': 'Mardi',
+               'Wed': 'Mercredi',
+               'Thu': 'Jeudi',
+               'Fri': 'Vendredi',
+               'Sat': 'Samedi'
+               }
 
 @bp_backups.route('/')
 def login():
@@ -28,23 +36,21 @@ def bckp_detail(id):
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
-    print(repo_array)
     try:
         array_ligne1 = repo_array[3].split(' ')
     except IndexError:
         flash("Erreur --> voir logs !")
         return redirect(url_for('index'))
     is_encrypted = True if array_ligne1[1] == 'Yes' else False
-    ligne3 = repo_array[-4]
     array_ligne3 = repo_array[-4].split(' ')
     array_ligne3 = ' '.join(array_ligne3).split()
-
     context = {
         'repo_id': repo.id,
         'is_encrypted': is_encrypted,
         'original_size': array_ligne3[-6] + " " + array_ligne3[-5],
         'compressed_size': array_ligne3[-4] + " " + array_ligne3[-3],
-        'deduplicated_size': array_ligne3[-2] + " " + array_ligne3[-1],
+        'deduplicated_size': array_ligne3[-2] + " " + array_ligne3[-1]
+
     }
     return render_template('bckp_detail.html', title=title, context=context)
 
@@ -64,13 +70,8 @@ def ajax_liste_archives(id):
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
-    print(repo_array)
     data = [get_data_from_archives_list(ligne, repo.id) for ligne in repo_array]
-    # print(data)
-    # remove None in array
     data = [i for i in data if i]
-    # [repo_to_dict(repo) for repo in query]_
-    # print(data)
     return {
         'data': data[1:],
         # [repo.to_dict() for repo in query],
@@ -82,7 +83,6 @@ def get_data_from_archives_list(ligne, repo_id):
     if ligne[0] == '/':
         return None
     ligne_array = ligne.split(' ')
-    print(f"==={ligne_array}===")
     if len(ligne_array) < 4:
         archive_date = str(ligne_array[2])
         result = False
@@ -95,14 +95,13 @@ def get_data_from_archives_list(ligne, repo_id):
             heure_archive = str(ligne_array[3])            
         archive_date = date_archive + " - " + heure_archive
         str_archive_date = datetime.strptime(date_archive, "%Y-%m-%d").date()
-        # print(date_archive)
         date_now = date.today()
         delta = date_now - str_archive_date
         if delta.days > 0:
             result = False
         else:
             result = True
-        
+
     return {'id': repo_id,
             'archive_name': ligne_array[0][:40],
             'result': result,
@@ -127,20 +126,40 @@ def archive_info(repo_id, archive_name):
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
-    # print(repo_array)
     data = [ligne for ligne in repo_array if ligne]
-    print(data)
-    print(data[-2])
-    array_ligne = data[-2].split(' ')
-    array_ligne = ' '.join(array_ligne).split()
-    print(array_ligne)
-
+    print(f"DATA : {data}")
+    original_size = compressed_size = deduplicated_size = ""
+    server = ligne_date = duration = nb_files = ""
+    for ligne in data:
+        my_array_ligne = ligne.split(' ')
+        my_array_ligne = ' '.join(my_array_ligne).split()
+        print(f"MY_array_ligne : {my_array_ligne}")
+        try:
+            if my_array_ligne[0] == 'This':
+                original_size = my_array_ligne[2] + " " + my_array_ligne[3]
+                compressed_size = my_array_ligne[4] + " " + my_array_ligne[5]
+                deduplicated_size = my_array_ligne[6] + " " + my_array_ligne[7]
+            elif my_array_ligne[0] == 'Hostname:':
+                server = my_array_ligne[1]
+            elif my_array_ligne[0] == 'Duration:':
+                duration = my_array_ligne[1] + " " + my_array_ligne[2]
+            elif my_array_ligne[0] == 'Number':
+                nb_files = my_array_ligne[3]
+            elif my_array_ligne[1] == '(start):':
+                my_day = my_array_ligne[2][0:3]
+                ligne_date = my_weekdays[my_day] + " - " + my_array_ligne[3] + " - " + my_array_ligne[4]
+        except IndexError:
+            pass
     title = "Archive Info"
     context = {'repo_name': repo.repo_name,
                'archive_name': archive_name,
-               'original_size': array_ligne[-6] + " " + array_ligne[-5],
-               'compressed_size': array_ligne[-4] + " " + array_ligne[-3],
-               'deduplicated_size': array_ligne[-2] + " " + array_ligne[-1],}
+               'original_size': original_size,
+               'compressed_size': compressed_size,
+               'deduplicated_size': deduplicated_size,
+               'server': server,
+               'date': ligne_date,
+               'duration': duration,
+               'nb_files': nb_files, }
     return render_template('archive_info.html', title=title, context=context)
 
 
@@ -163,12 +182,10 @@ def get_list_archive(repo_id, archive_name, filter=None):
     if filter:
         args.append("--find")
         args.append(filter.replace("*", "/"))
-    print(args)
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
-    # print(repo_array)
     data = [ligne for ligne in repo_array if ligne]
     if len(data) > 402:
         data = data[2:402]
@@ -176,7 +193,6 @@ def get_list_archive(repo_id, archive_name, filter=None):
         data = "Pas de fichier conrrespondant trouvé"
     else:
         data = data[2:]
-    # print(data)
     data = {'data': data, }
 
     return make_response(jsonify(data, 200))
