@@ -67,9 +67,10 @@ def before_request():
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
-
 @app.after_request
 def apply_caching(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    # response.headers['Content-Security-Policy'] = "default-src 'self'; script-src *"
     return response
+
 """

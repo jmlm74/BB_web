@@ -180,8 +180,9 @@ def get_list_archive(repo_id, archive_name, filter=None):
     args.append(archive_name)
     args.append("--short")
     if filter:
-        args.append("--find")
+        args.append("--path")
         args.append(filter.replace("*", "/"))
+    print(args)
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
         ...
