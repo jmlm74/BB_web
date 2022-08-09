@@ -11,6 +11,7 @@
                 <thead>
                 <tr>
                     <th></th>
+                    <th>Serveur</th>
                     <th>repo</th>
                     <th></th>
                     <th>date dernière archive</th>
@@ -40,6 +41,7 @@
                 render: function (data, type, row, meta) {
                     return meta.row + meta.settings._iDisplayStart + 1;}
                 },
+                {data: 'server_name',orderable: true, searchable: true },
                 {data: 'repo_name', orderable: true },
                 {data: 'result', searchable: false, visible: false},
                 {data: 'repo_last_archive', orderable: false,

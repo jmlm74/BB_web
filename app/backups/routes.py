@@ -179,23 +179,21 @@ def get_list_archive(repo_id, archive_name, filter=None):
     args.append("--archive")
     args.append(archive_name)
     args.append("--short")
-    if filter:
-        # args.append("--path")
-        args.append("--find")
-        args.append(filter.replace("*", "/"))
     print(args)
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
         ...
     repo_array = rc.stdout.split('\n')
     data = [ligne for ligne in repo_array if ligne]
+    if filter:
+        data = [ligne for ligne in data if filter in ligne]
     if len(data) > 402:
         data = data[2:402]
     elif len(data) == 0:
-        data = "Pas de fichier conrrespondant trouvé"
+        data.append("Pas de fichier correspondant trouvé")
     else:
         data = data[2:]
-    data = {'data': data, }
+    data = {'data': data }
 
     return make_response(jsonify(data, 200))
 

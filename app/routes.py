@@ -19,7 +19,8 @@ def index():
 
 @app.route('/repos_list')
 def ajax_liste_users():
-    query = Repo.query
+    query = Repo.query.filter_by(repo_active=True)
+    server_name = "toto"
 
     # search filter
     search = request.args.get('search[value]')
@@ -52,7 +53,6 @@ def ajax_liste_users():
     start = request.args.get('start', type=int)
     length = request.args.get('length', type=int)
     query = query.offset(start).limit(length)
-
     # [repo_to_dict(repo) for repo in query]
     data = [repo_to_dict(repo) for repo in query]
     print(data)
@@ -65,6 +65,7 @@ def ajax_liste_users():
     }
 
 def repo_to_dict(repo):
+    server_name = repo.repo_servername
     my_env = {**os.environ, 'PATH': '/usr/sbin:/sbin:/usr/bin:' + os.environ['PATH']}
     args = [app.config['BORG_BINARY']]
     args.append('--override')
@@ -77,6 +78,7 @@ def repo_to_dict(repo):
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
         return{'id': repo.id,
+               'server_name': server_name,
                'repo_name': repo.repo_name,
                'repo_last_archive': "ERREUR !",
                'result': False, }
@@ -86,6 +88,7 @@ def repo_to_dict(repo):
         # pas de sauvegardes !
         return {
             'id': repo.id,
+            'server_name': server_name,
             'repo_name': repo.repo_name,
             'repo_last_archive': "1900-01-01",
             'result': False,
@@ -102,8 +105,9 @@ def repo_to_dict(repo):
         result = False
     else:
         result = True
-
+    print(f"{repo.repo_name} - {server_name}")
     return {'id': repo.id,
+            'server_name': server_name,
             'repo_name': repo.repo_name,
             'repo_last_archive': repo_last_archive, 
             'result': result, }
