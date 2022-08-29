@@ -1,3 +1,6 @@
+@import url("virtual-select.min.css");
+@import url("tooltip.min.css");
+
 .wrapper{
     justify-content: center;
     align-items: center;
@@ -29,4 +32,8 @@
     {
         box-shadow: 0 0 0 0 rgb(255, 109, 74, 0) , 0 0 0 30px rgb(255, 109, 74, 0)
     }
+}
+
+#my_selectbox{
+    margin-left: 20px;
 }

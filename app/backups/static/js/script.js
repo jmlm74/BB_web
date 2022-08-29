@@ -1,4 +1,4 @@
-console.log("ici");
+console.log("Script");
 window.onload = function() {
     console.log("window loaded");
     // decoupe URL
@@ -12,8 +12,10 @@ window.onload = function() {
         let repo_id = url_sans_repo.substring(posit);
 
         
-        let target_detail = document.querySelector('#archive_detail');
-        let button_loader_div = document.querySelector('#button-loader-div')
+        let target_detail = document.querySelector('#archive_detail_col1');
+        let target_detail2 = document.querySelector('#archive_detail_col2');
+
+        let button_loader_div = document.querySelector('#button-loader-div');
         
         // affichage bouton si affiché (filter)
         if (document.querySelector("#button-loader-div")){ 
@@ -54,6 +56,7 @@ window.onload = function() {
                     let data2 = data[0]['data'];
                     if (data2.length === 400){ alert ("Attention - Résultat tronqué à 400 lignes !")} ;
                     // mise des lifgnes dans une  textarea
+                    /*
                     let my_textarea = document.createElement('textarea');
                     for (const ligne of data2) {
                         my_textarea.value += ligne;
@@ -63,8 +66,40 @@ window.onload = function() {
                     my_textarea.cols = 100
                     my_textarea.classList.add("ms-5", "mt-3")
                     target_detail.appendChild(my_textarea);
+                    */
                     // suppression du bouton et de l'anim ==> Traitement terminé !
-                    button_loader_div.parentElement.removeChild(button_loader_div)
+                    button_loader_div.parentElement.removeChild(button_loader_div);
+                    //
+                    // ICI Select
+                    // 
+                    let my_div = document.createElement('div');
+                    my_div.id = "my_select";
+                    my_div.classList.add("ms-5")
+                    my_div.classList.add("mt-3")
+                    target_detail.appendChild(my_div);
+                    let options_array = [];
+                    let cprt = 0;
+                    for (const ligne of data2){
+                        const option = { label: ligne, value: cprt ,customData: 'data-tooltip=ligne'};
+                        cprt++;
+                        options_array.push(option);
+                    };
+                    // la mise en forme sexy
+                    VirtualSelect.init({
+                        ele: '#my_select',
+                        options: options_array,
+                        multiple: true,
+                        tooltipMaxWidth: '800px',
+                        dropboxWidth: '500px',
+                        keepAlwaysOpen: true
+                    });
+                    let my_button = document.createElement('button');
+                    my_button.innerHTML = "Restore";
+                    my_button.classList.add("btn");
+                    my_button.classList.add("btn-warning")
+                    my_button.classList.add("align-middle")
+
+                    target_detail2.appendChild(my_button);
                 })
             })
             .catch(error => {

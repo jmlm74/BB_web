@@ -24,7 +24,14 @@
                 </div>
             </div>
             <div class="row col-12 data" id="archive_detail">
+                <div class="col-6" id="archive_detail_col1"></div>
+                <div class="col-6" id="archive_detail_col2" class="align-middle text-center"></div>
             </div>   
         {%endif%}
     </div>
+    <!-- Ajout SelectBox -->
+<script src="{{ url_for(request.blueprint+'.static', filename='js/virtual-select.min.js') }}"></script>
+<script src="{{ url_for(request.blueprint+'.static', filename='js/tooltip.min.js') }}"></script>
+
 {% endblock %}
+
