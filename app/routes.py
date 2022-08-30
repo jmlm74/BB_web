@@ -53,7 +53,6 @@ def ajax_liste_users():
     start = request.args.get('start', type=int)
     length = request.args.get('length', type=int)
     query = query.offset(start).limit(length)
-    # [repo_to_dict(repo) for repo in query]
     data = [repo_to_dict(repo) for repo in query]
     print(data)
     return {
@@ -101,7 +100,7 @@ def repo_to_dict(repo):
     # print(date_archive)
     date_now = date.today()
     delta = date_now - date_archive
-    if delta.days > 0:
+    if delta.days > repo.repo_nb_days:
         result = False
     else:
         result = True

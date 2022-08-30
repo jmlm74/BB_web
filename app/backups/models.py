@@ -7,6 +7,7 @@ class Repo(db.Model):
     repo_passphrase = db.Column(db.String(50))
     repo_servername = db.Column(db.String(20), default="Servername")
     repo_active = db.Column(db.Boolean, default=True)
+    repo_nb_days = db.Column(db.Integer, default=1)
 
     created_on = db.Column(db.DateTime, server_default=db.func.now())
     updated_on = db.Column(db.DateTime, server_default=db.func.now(), server_onupdate=db.func.now())
