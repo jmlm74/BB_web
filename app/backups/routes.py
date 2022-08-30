@@ -7,6 +7,9 @@ from app.backups.models import Repo
 from flask_api import status
 from app.backups.forms import ArchiveFilterForm
 from datetime import datetime, date
+from paramiko import SSHClient
+from scp import SCPClient, SCPException
+import yaml
 
 my_weekdays = {'Sun': 'Dimanche',
                'Mon': 'Lundi',
@@ -44,6 +47,28 @@ def bckp_detail(id):
     is_encrypted = True if array_ligne1[1] == 'Yes' else False
     array_ligne3 = repo_array[-4].split(' ')
     array_ligne3 = ' '.join(array_ligne3).split()
+    # Recupere les infos du fichier yaml
+    last_char_index = repo.repo_name.rfind("/")
+    first_char_index = repo.repo_name.find(":")
+    at_pos = repo.repo_name.find("@")
+    fichier_yaml_server = repo.repo_name[first_char_index + 1:last_char_index] + "/config/" + \
+        repo.repo_name[last_char_index + 1:] + "/config.yaml"
+    local_yaml_fichier = "/tmp/toto.yaml"
+
+    ssh = SSHClient()
+    ssh.load_system_host_keys()
+    ssh.connect(hostname=repo.repo_name[at_pos + 1:first_char_index], username=repo.repo_name[:at_pos])
+    scp = SCPClient(ssh.get_transport())
+    try:
+        scp.get(fichier_yaml_server, local_path=local_yaml_fichier)
+    except SCPException as e:
+        print(f"ERROR scp - {e}")
+    else:
+        # parse yaml
+        ...
+    finally:
+        scp.close()
+
     context = {
         'repo_id': repo.id,
         'is_encrypted': is_encrypted,
