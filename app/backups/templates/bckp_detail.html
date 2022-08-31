@@ -20,6 +20,36 @@
             </div>
         </div>
         <hr />
+        {# Ici les details du config.yaml #}
+        {% if context['yaml'] is not none %}
+        <div class="row">
+            <div class="col-4 ps-3 border-end border-dark">
+                <p class="text-center fw-bold">Sauvegardes</p>
+                <ul>
+                    {% for item in context['yaml']['source'] %}
+                    <li><small>{{item}}</small></li>
+                     {% endfor %}
+                </ul>
+            </div>
+            <div class="col-4 ps-3 border-end border-dark">
+                <p class="text-center fw-bold">Exclusions</p>
+                <ul>
+                    {% for item in context['yaml']['exclude'] %}
+                        <li><small>{{item}}</small></li>
+                    {% endfor %}
+                <ul>
+            </div>
+            <div class="col-4 ps-3">
+                <p class="text-center fw-bold">Retentions</p>
+                <ul>
+                    <li><small>Daily   : {{context['yaml']['daily'] }}</small></li>
+                    <li><small>Weekly  : {{context['yaml']['weekly'] }}</small></li>
+                    <li><small>Monthly : {{context['yaml']['monthly'] }}</small></li>
+                    <li><small>Yearly : {{context['yaml']['yearly'] }}</small></li>
+            </div>
+        </div>
+        <hr />
+        {% endif %}
         <div class="row mt-3 d-flex">
             <table id="data" class="table table-striped display" style="width:100%" >
                 <thead>

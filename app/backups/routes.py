@@ -59,13 +59,23 @@ def bckp_detail(id):
     ssh.load_system_host_keys()
     ssh.connect(hostname=repo.repo_name[at_pos + 1:first_char_index], username=repo.repo_name[:at_pos])
     scp = SCPClient(ssh.get_transport())
+    my_yaml = None
     try:
         scp.get(fichier_yaml_server, local_path=local_yaml_fichier)
     except SCPException as e:
         print(f"ERROR scp - {e}")
     else:
         # parse yaml
-        ...
+        with open(local_yaml_fichier, 'r') as yaml_file:
+            yaml_data = yaml.safe_load(yaml_file)
+        print(yaml_data)
+        my_yaml = {'source': yaml_data['location']['source_directories'],
+                   'exclude': yaml_data['location']['exclude_patterns'],
+                   'daily': yaml_data['retention']['keep_daily'],
+                   'weekly': yaml_data['retention']['keep_weekly'],
+                   'monthly': yaml_data['retention']['keep_monthly'],
+                   'yearly': yaml_data['retention']['keep_yearly'],
+                   }
     finally:
         scp.close()
 
@@ -74,8 +84,8 @@ def bckp_detail(id):
         'is_encrypted': is_encrypted,
         'original_size': array_ligne3[-6] + " " + array_ligne3[-5],
         'compressed_size': array_ligne3[-4] + " " + array_ligne3[-3],
-        'deduplicated_size': array_ligne3[-2] + " " + array_ligne3[-1]
-
+        'deduplicated_size': array_ligne3[-2] + " " + array_ligne3[-1],
+        'yaml': my_yaml,
     }
     return render_template('bckp_detail.html', title=title, context=context)
 
