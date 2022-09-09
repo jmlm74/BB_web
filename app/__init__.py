@@ -8,8 +8,7 @@ from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 from flask_login import current_user
 from flask_mail import Mail
-from datetime import datetime
-import os
+
 
 app = Flask(__name__)
 

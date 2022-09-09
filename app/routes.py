@@ -76,15 +76,16 @@ def repo_to_dict(repo):
     args.append("1")
     rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
     if rc.returncode != 0:
-        return{'id': repo.id,
-               'server_name': server_name,
-               'repo_name': repo.repo_name,
-               'repo_last_archive': "ERREUR !",
-               'result': False, }
+        print(f"ERREUR {args} - {rc.stdout} - {rc.stderr}")
+        return {'id': repo.id,
+                'server_name': server_name,
+                'repo_name': repo.repo_name,
+                'repo_last_archive': "ERREUR !",
+                'result': False, }
 
     print(f"---{rc.stdout}---")
     if rc.stdout.count('\n') == 1:
-        # pas de sauvegardes !
+        # pas de sauvegardes !
         return {
             'id': repo.id,
             'server_name': server_name,
@@ -94,10 +95,8 @@ def repo_to_dict(repo):
         }
     date_archive_str = rc.stdout.split()[-3]
     time_archive_str = rc.stdout.split()[-2]
-    # print(date_archive_str)
     repo_last_archive = date_archive_str + " - " + time_archive_str
     date_archive = datetime.strptime(date_archive_str, "%Y-%m-%d").date()
-    # print(date_archive)
     date_now = date.today()
     delta = date_now - date_archive
     if delta.days > repo.repo_nb_days:
