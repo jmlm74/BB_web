@@ -35,22 +35,12 @@ def showlog(repo_id):
             print(f"ERROR scp - {e}")
             flash(f"Erreur download fichier log {local_fichier_log}")
             return render_template('showlog.html', title=title, context=context)
-    
-    '''
-    sftp_client = ssh.open_sftp()
-    remote_file = sftp_client.open(fichier_log)
-    try:
-        ficlog_array = []
-        for line in remote_file:
-            if len(line) > 0:
-                line = line.strip()
-                print(f"---{line}---")
-                ficlog_array.append(line)
-    finally:
-        remote_file.close()
-    '''
     context['ficlog'] = fichier_log
     context['server'] = repo.repo_servername
-    context['local_fichier_log_url'] = 'http://' + request.host + '/tmp/' + local_nomfichier_log
+    if request.url.find("https") == -1:
+        protocole = "http://"
+    else:
+        protocole = "https://"
+    context['local_fichier_log_url'] = protocole + request.host + '/tmp/' + local_nomfichier_log
     # context['ficlog_array'] = ficlog_array
     return render_template('showlog.html', title=title, context=context)
