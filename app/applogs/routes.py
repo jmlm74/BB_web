@@ -37,7 +37,8 @@ def showlog(repo_id):
             return render_template('showlog.html', title=title, context=context)
     context['ficlog'] = fichier_log
     context['server'] = repo.repo_servername
-    if request.url.find("https") == -1:
+    print(request.url)
+    if request.url.find("https") == -1 and request.url.find("127.0.0.1") != -1:
         protocole = "http://"
     else:
         protocole = "https://"
