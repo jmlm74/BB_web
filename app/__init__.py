@@ -8,6 +8,8 @@ from flask_bootstrap import Bootstrap5
 from flask_login import LoginManager
 from flask_login import current_user
 from flask_mail import Mail
+import shutil
+import os
 
 
 app = Flask(__name__)
@@ -22,6 +24,10 @@ mail = Mail(app)
 toolbar = DebugToolbarExtension(app)
 
 bootstrap = Bootstrap5(app)
+
+shutil.rmtree(app.config['TMPDIR'], ignore_errors=True, onerror=None)
+if not os.path.isdir(app.config['TMPDIR']):
+    os.mkdir(app.config['TMPDIR'])
 
 
 def is_admin(function):
@@ -45,6 +51,8 @@ app.register_blueprint(bp_backups, url_prefix='/backups')
 from app.auth import bp as auth_bp, models
 app.register_blueprint(auth_bp, url_prefix='/auth')
 
+from app.applogs import bp_applogs
+app.register_blueprint(bp_applogs, url_prefix='/applogs')
 
 from app import routes, errors
 login_manager = LoginManager(app)

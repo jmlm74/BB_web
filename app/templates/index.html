@@ -12,12 +12,13 @@
             <table id="data" class="table table-striped display" style="width:100%" >
                 <thead>
                 <tr>
-                    <th></th>
+                    <th></th> <!-- L'indice -->
                     <th>Serveur</th>
                     <th>repo</th>
-                    <th></th>
+                    <th></th> <!-- result -->
+                    <th></th> <!-- result_log-->
                     <th>date dernière archive</th>
-                    <th></th>
+                    <th></th> <!-- Les icones -->
                 </tr>
                 </thead> 
                 
@@ -35,7 +36,8 @@
                 console.log(data)
                 console.log(row)
                 let row_color="bg-success"
-                if (data['result'] == false){ row_color="bg-warning" }
+                if (data['result_log'] == false) { row_color="bg-danger"}
+                else if (data['result'] == false){ row_color="bg-warning" }
                 $(row).addClass(row_color)
             },
             columns:[
@@ -46,6 +48,7 @@
                 {data: 'server_name',orderable: true, searchable: true },
                 {data: 'repo_name', orderable: true },
                 {data: 'result', searchable: false, visible: false},
+                {data: 'result_log', searchable: false, visible: false},
                 {data: 'repo_last_archive', orderable: false,
                 render: function (repo_last_archive,type,row){
                     let color = 'red'
@@ -55,7 +58,9 @@
                 {data: 'id',  orderable: false,
                 render: function(id){
                     return '<a href="/backups/bckp_detail/'+id+'"><img data-bs-toggle="tooltip" data-bs-placement="left" \
-                        title="Repo detail" style="width: 20px;" src="/static/images/pencil.svg" /></a>'
+                        title="Repo detail" style="width: 20px;" src="/static/images/pencil.svg" /></a> \
+                        <a href="/applogs/showlog/'+id+'"><img data-bs-toggle="tooltip" data-bs-placement="left" \
+                        title="logfile" style="width: 20px;" src="/static/images/log.png" /></a>'
 
                 }},
             ]

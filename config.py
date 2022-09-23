@@ -17,6 +17,9 @@ class Config(object):
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or "boewippcwujthxpk"
     ADMINS = ['jmlm74@gmail.com']
     APPNAME = 'TAQ-BB'
+    TMPDIR = basedir + '/tmp'
 
     BORG_BINARY = '/usr/bin/borgmatic'
     BORG_RESTORE_PATH = '/home/partage/taq-partage/restore'
+    BORG_LOG_PATH = '/home/sauvegardes/backup/logs/'
+

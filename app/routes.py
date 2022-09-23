@@ -1,8 +1,9 @@
 import imp
+from multiprocessing import Value
 import os
 import subprocess
 from time import strptime
-from flask import redirect, render_template, make_response, request, url_for
+from flask import redirect, render_template, make_response, request, url_for, send_file
 from app import app, db
 from app.backups.models import Repo
 from datetime import datetime, date
@@ -81,7 +82,8 @@ def repo_to_dict(repo):
                 'server_name': server_name,
                 'repo_name': repo.repo_name,
                 'repo_last_archive': "ERREUR !",
-                'result': False, }
+                'result': False,
+                'result_log': 0 }
 
     print(f"---{rc.stdout}---")
     if rc.stdout.count('\n') == 1:
@@ -92,6 +94,7 @@ def repo_to_dict(repo):
             'repo_name': repo.repo_name,
             'repo_last_archive': "1900-01-01",
             'result': False,
+            'result_log': False
         }
     date_archive_str = rc.stdout.split()[-3]
     time_archive_str = rc.stdout.split()[-2]
@@ -103,9 +106,39 @@ def repo_to_dict(repo):
         result = False
     else:
         result = True
+    # Recuperer ERROR dans fichier log
+    result_log = True
     print(f"{repo.repo_name} - {server_name}")
+    fichier_log = repo.repo_name[:-4]
+    pos_last_slash = fichier_log.rfind('/')
+    if pos_last_slash < 0:
+        result_log = False
+    else:
+        fichier_log = app.config['BORG_LOG_PATH'] + fichier_log[pos_last_slash:] + 'log'
+        ssh_server = rc.stdout.split(':')[0]
+        print(f"LOGFILE:{fichier_log} - ssh_server : {ssh_server}")
+        args = ["ssh"]
+        args.append(ssh_server)
+        args.append(f"grep ERROR {fichier_log}|wc -l")
+        rc = subprocess.run(args, capture_output=True, text=True, env=my_env)
+        print(f"Erreur SSH STDOUT : {rc.stdout} - STDERR : ---{rc.stderr}---")
+        try:
+            print("ICI")
+            if rc := int(rc.stdout) > 0 or len(rc.stderr) > 0:
+                print("ICI FALSE")
+                result_log = False
+        except ValueError:
+            result_log = False
+            print(f"Erreur SSH STDOUT : {rc.stdout} - STDERR : {rc.stderr}")
+
     return {'id': repo.id,
             'server_name': server_name,
             'repo_name': repo.repo_name,
-            'repo_last_archive': repo_last_archive, 
-            'result': result, }
+            'repo_last_archive': repo_last_archive,
+            'result': result,
+            'result_log': result_log, }
+
+@app.route('/tmp/<filename>', methods=['GET'])
+def get_tmp(filename):
+    file_to_send = app.config['TMPDIR'] + '/' + str(filename)
+    return send_file(file_to_send, as_attachment=False)
