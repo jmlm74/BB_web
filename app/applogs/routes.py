@@ -3,6 +3,7 @@ from app.backups.models import Repo
 from paramiko import SSHClient
 from scp import SCPClient, SCPException
 import uuid
+import pysftp, paramiko
 from flask import render_template, request, flash
 from app import app
 
@@ -24,13 +25,11 @@ def showlog(repo_id):
     local_fichier_log = app.config['TMPDIR'] + "/" + local_nomfichier_log
     print(f"LOGFILE:{fichier_log} - ssh_server : {ssh_server} - username : {username} - LF : {local_fichier_log} ")
 
-    ssh = SSHClient()
-    ssh.load_system_host_keys()
-    ssh.connect(hostname=ssh_server, username=username)
-    with SCPClient(ssh.get_transport()) as scp:
+    # my_key = paramiko.Ed25519Key.from_private_key_file("/root/.ssh/id_ed25519")
+    # my_key = paramiko.Ed25519Key.get_fingerprint("/root/.ssh/id_ed25519")
+    with pysftp.Connection(ssh_server, username=username, private_key="/root/.ssh/id_rsa") as sftp:
         try:
-            scp.get(fichier_log, local_path=local_fichier_log)
-            scp.put(local_fichier_log)
+            sftp.get(fichier_log, local_fichier_log)
         except SCPException as e:
             print(f"ERROR scp - {e}")
             flash(f"Erreur download fichier log {local_fichier_log}")
