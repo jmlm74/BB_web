@@ -1,9 +1,8 @@
 from app.applogs import bp_applogs
 from app.backups.models import Repo
-from paramiko import SSHClient
-from scp import SCPClient, SCPException
+from scp import SCPException
 import uuid
-import pysftp, paramiko
+import pysftp
 from flask import render_template, request, flash
 from app import app
 

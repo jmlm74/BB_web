@@ -1,9 +1,6 @@
-import imp
-from multiprocessing import Value
 import os
 import subprocess
-from time import strptime
-from flask import redirect, render_template, make_response, request, url_for, send_file
+from flask import render_template, make_response, request, send_file
 from app import app, db
 from app.backups.models import Repo
 from datetime import datetime, date
@@ -21,7 +18,6 @@ def index():
 @app.route('/repos_list')
 def ajax_liste_users():
     query = Repo.query.filter_by(repo_active=True)
-    server_name = "toto"
 
     # search filter
     search = request.args.get('search[value]')
@@ -83,7 +79,7 @@ def repo_to_dict(repo):
                 'repo_name': repo.repo_name,
                 'repo_last_archive': "ERREUR !",
                 'result': False,
-                'result_log': 0 }
+                'result_log': 0, }
 
     print(f"---{rc.stdout}---")
     if rc.stdout.count('\n') == 1:

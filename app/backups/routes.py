@@ -5,7 +5,6 @@ from flask import flash, make_response, redirect, render_template, jsonify, url_
 from app.backups import bp_backups
 from app import app
 from app.backups.models import Repo
-from flask_api import status
 from app.backups.forms import ArchiveFilterForm
 from datetime import datetime, date
 from paramiko import SSHClient
