@@ -154,6 +154,7 @@ window.onload = function() {
                             let msg = "La restore a été lancée sur le serveur de backup ! \n Cela peut prendre quelques minutes \n Les fichiers se trouvent dans /home/partage/taq_partage/restore \n \
 et sont donc accessibles depuis n'importe quel serveur !";
                             alert(msg);
+                            window.history.back();
                         }, false);
                     }
                 });
