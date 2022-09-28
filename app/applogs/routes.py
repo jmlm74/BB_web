@@ -34,6 +34,9 @@ def showlog(repo_id):
             print(f"ERROR scp - {e}")
             flash(f"Erreur download fichier log {local_fichier_log}")
             return render_template('showlog.html', title=title, context=context)
+        except FileNotFoundError as e:
+            print(f"ERROR scp - {e}")
+            open(local_fichier_log, mode='a').close()
     context['ficlog'] = fichier_log
     context['server'] = repo.repo_servername
     print(request.url)
