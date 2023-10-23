@@ -121,6 +121,8 @@ def get_data_from_archives_list(ligne, repo_id, retention=0):
     if ligne[0] == '/':
         return None
     ligne_array = ligne.split(' ')
+    while("" in ligne_array):
+        ligne_array.remove("")
     if len(ligne_array) < 4:
         archive_date = str(ligne_array[2])
         result = False
