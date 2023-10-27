@@ -53,7 +53,8 @@ def bckp_detail(id):
     first_char_index = repo.repo_name.find(":")
     at_pos = repo.repo_name.find("@")
     fichier_yaml_server = repo.repo_name[first_char_index + 1:last_char_index] + "/config/" + \
-        repo.repo_name[last_char_index + 1:] + "/config.yaml"
+        repo.repo_name[last_char_index + 1:] + "/borgmatic/config.yaml"
+    print(f"fichier_yaml : {fichier_yaml_server}")
     local_yaml_fichier = "/tmp/toto.yaml"
 
     ssh = SSHClient()
